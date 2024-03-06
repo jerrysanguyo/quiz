@@ -7,8 +7,14 @@ use App\Models\question;
 
 class questionController extends Controller
 {
-    public function question() {
-        return view('pages.question');
+    
+    public function listOfQuestion () {
+        $listQuestion = question::all();
+        return view('pages.question', ['listQuestion' => $listQuestion]);
+    }
+
+    public function formQuestion() {
+        return view('pages.addQuestion');
     }
 
     public function addQuestion(Request $request) {
@@ -24,7 +30,7 @@ class questionController extends Controller
 
         $newQuestion = question::create($data);
 
-        return redirect(route('home'));
+        return redirect(route('question'));
     }
 
     public function editQuestion(question $question) {
@@ -43,11 +49,11 @@ class questionController extends Controller
         
         $question->update($updateData);
 
-        return redirect(route('home'))->with('success', 'Question updated successfully!');
+        return redirect(route('question'))->with('success', 'Question updated successfully!');
     }
 
     public function deleteQuestion(question $question) {
         $question->delete();
-        return redirect(route('home'))->with('success', 'Question deleted successfully!');
+        return redirect(route('question'))->with('success', 'Question deleted successfully!');
     }
 }

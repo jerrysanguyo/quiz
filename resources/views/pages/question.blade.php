@@ -1,60 +1,58 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container">
+<div class="container-fluid">
     <div class="row justify-content-center">
         <div class="col-md-8">
             <div class="card">
-                <div class="card-header">{{ __('Add Question') }}</div>
+                <div class="card-header">{{ __('List of Questions') }}</div>
+
                 <div class="card-body">
-                    @if($errors->any())
-                        <ul>
-                            @foreach($errors->all() as $error)
-                                <li>{{ $error }}</li>
+                    <div class="row">
+                        <a href="{{ route('question-form') }}">
+                            <button class="btn btn-primary">Add question</button>
+                        </a>
+                    </div>
+                    <div class="row">
+                        @if(session()->has('success'))
+                        <div class="col-md-12">
+                            {{ session('success') }}
+                        </div>
+                        @endif
+                    </div>
+                    <table class='table'>
+                        <thead>
+                            <tr>
+                                <th>Question number</th>
+                                <th>Description</th>
+                                <th>A</th>
+                                <th>B</th>
+                                <th>C</th>
+                                <th>D</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach ($listQuestion as $questions)
+                            <tr>
+                                <td>{{ $questions->qNumber }}</td>
+                                <td>{{ $questions->qDescription }}</td>
+                                <td>{{ $questions->qAnswer }}</td>
+                                <td>{{ $questions->qChoicesB }}</td>
+                                <td>{{ $questions->qChoicesC }}</td>
+                                <td>{{ $questions->qChoicesD }}</td>
+                                <td>
+                                    <a href="{{ route('edit-question', ['question' => $questions]) }}"><button class="btn btn-success">Edit</button></a>
+                                    <form method="post" action="{{ route('delete-question', ['question'=>$questions]) }}">
+                                        @csrf
+                                        @method('delete')
+                                        <input class="btn btn-danger" type="submit" value="Delete" />
+                                    </form>
+                                </td>
+                            </tr>
                             @endforeach
-                        </ul>
-                    @endif
-                    <form method="post" action="{{ route('add-question') }}">
-                        @csrf
-                        @method('post')
-                        <div class="col-md-12" hidden>
-                            <label class="form-label">Added by:</label>
-                            <input class="form-control" type="number" name="added_by" value="{{ Auth::user()->id }}" />
-                        </div>
-                        <div class="col-md-12">
-                            <label class="form-label">Question Number:</label>
-                            <input class="form-control" type="number" name="qNumber" />
-                        </div>
-                        <div class="col-md-12">
-                            <label class="form-label">Question:</label>
-                            <input class="form-control" type="text" name="qDescription" />
-                        </div>
-                        <div class="row">
-                            <div class="col-md-6">
-                                <label class="form-label">Answer:</label>
-                                <input class="form-control" type="text" name="qAnswer" />
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label">Choice B:</label>
-                                <input class="form-control" type="text" name="qChoicesB" />
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-6">
-                                <label class="form-label">Choice C:</label>
-                                <input class="form-control" type="text" name="qChoicesC" />
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label">Choice D:</label>
-                                <input class="form-control" type="text" name="qChoicesD" />
-                            </div>
-                        </div><br>
-                        <div class="row">
-                            <div class="col-md-12">
-                                <input class="btn btn-primary" type="submit" value="Add Question" />
-                            </div>
-                        </div>
-                    </form>
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
