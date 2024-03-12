@@ -3,8 +3,10 @@
         @if(auth()->check())
             @if(auth()->user()->type === 'admin')
                 <a class="navbar-brand" href="{{ url('home') }}">
-            @else
+            @elseif(auth()->user()->type === 'user')
                 <a class="navbar-brand" href="{{ url('user-home') }}">
+            @else
+                <a href="{{ url('judge-dashboard') }}" class="navbar-brand"></a>
             @endif
         @endif
             <img src="{{ asset('imgs/IT.png') }}" style="width:3%" alt="Image">

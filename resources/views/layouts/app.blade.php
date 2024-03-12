@@ -15,8 +15,10 @@
         @if(auth()->check())
             @if(auth()->user()->type === 'admin')
                 @include('layouts.admin_nav')
-            @else
+            @elseif(auth()->user()->type === 'user')
                 @include('layouts.user_nav')
+            @else
+                @include('layouts.judge_nav');
             @endif
         @endif
         <main class="py-4">
