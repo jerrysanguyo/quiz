@@ -16,8 +16,9 @@ class adminQuizController extends Controller
                           ->leftJoin(DB::raw('(SELECT user_id, SUM(result) AS total_score FROM user_answer GROUP BY user_id) AS scores'), 'users.id', '=', 'scores.user_id')
                           ->select('users.id', 'users.name', DB::raw('DATE(max_dates.max_created_at) AS date'), 'scores.total_score')
                           ->get();
-        
-            return view('home', ['takers' => $takers]); 
+
+        $view = auth()->user()->type === 'admin' ? 'home' : 'judge.index';
+        return view($view, ['takers' => $takers]);  
     }
 
     public function quizDetails(Request $request) {
@@ -33,8 +34,9 @@ class adminQuizController extends Controller
     
         $correctAnswersCount = $userAnswers->where('is_correct', true)->count();
         $incorrectAnswersCount = $userAnswers->where('is_correct', false)->count();
-    
-        return view('quiz.score', [
+        
+        $view = auth()->user()->type === 'admin' ? 'quiz.score' : 'judge.score';
+        return view($view, [
             'userAnswers' => $userAnswers,
             'correctAnswersCount' => $correctAnswersCount,
             'incorrectAnswersCount' => $incorrectAnswersCount

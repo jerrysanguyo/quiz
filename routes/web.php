@@ -5,9 +5,10 @@ use App\Http\Controllers\questionController;
 use App\Http\Controllers\adminQuizController;
 use App\Http\Controllers\quizController;
 use App\Http\Controllers\judgeController;
-use App\Http\Middleware\CheckUserRole;
 use App\Http\Controllers\unauthorizedAccess;
 use App\Http\Middleware\CheckNormalUserRole;
+use App\Http\Middleware\CheckUserRole;
+use App\Http\Middleware\judgeRole;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -38,7 +39,8 @@ Route::middleware(['auth', CheckUserRole::class])->group(function () {
 });
 
 Route::middleware (['auth', judgeRole::class])->group(function (){
-    Route::get('/Judge-Dashboard', [judgeController::class, 'judgeDashboard'])->name('judge-dashboard');
+    Route::get('/Judge-Dashboard', [adminQuizController::class, 'getQuizTakers'])->name('judge-dashboard');
+    Route::get('/Judge-quiz-details/{detail}', [adminQuizController::class, 'quizDetails'])->name('quizDetails');
 });
 
 Route::middleware(['auth', CheckNormalUserRole::class])->group(function () {

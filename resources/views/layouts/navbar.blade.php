@@ -6,7 +6,7 @@
             @elseif(auth()->user()->type === 'user')
                 <a class="navbar-brand" href="{{ url('user-home') }}">
             @else
-                <a href="{{ url('judge-dashboard') }}" class="navbar-brand"></a>
+                <a href="{{ url('Judge-Dashboard') }}" class="navbar-brand">
             @endif
         @endif
             <img src="{{ asset('imgs/IT.png') }}" style="width:3%" alt="Image">
