@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\quiz;
 use App\Models\User;
+use App\Models\disability;
 use Illuminate\Support\Facades\DB;
 
 class adminQuizController extends Controller
@@ -14,6 +15,7 @@ class adminQuizController extends Controller
                                 $join->on('users.id', '=', 'max_dates.user_id');
                             })
                           ->leftJoin(DB::raw('(SELECT user_id, SUM(result) AS total_score FROM user_answer GROUP BY user_id) AS scores'), 'users.id', '=', 'scores.user_id')
+                          ->whereNotIn('users.type', ['admin', 'judge'])
                           ->select('users.id', 'users.name', DB::raw('DATE(max_dates.max_created_at) AS date'), 'scores.total_score')
                           ->get();
 
@@ -41,5 +43,19 @@ class adminQuizController extends Controller
             'correctAnswersCount' => $correctAnswersCount,
             'incorrectAnswersCount' => $incorrectAnswersCount
         ]);
+    }
+
+    public function disability() {
+        return view('disability.index');
+    }
+
+    public function disabilityCreate(Request $request){
+        $data=$request->validate([
+            'disability_name'=>'required|string'
+        ]);
+
+        $newQuestion = disability::create($data);
+
+        return redirect(route('disability'));
     }
 }

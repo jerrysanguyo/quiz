@@ -36,6 +36,8 @@ Route::middleware(['auth', CheckUserRole::class])->group(function () {
     Route::put('/question/{question}/update',[questionController::class, 'updateQuestion'])->name('update-question');
     Route::delete('/question/{question}/delete',[questionController::class, 'deleteQuestion'])->name('delete-question');
     Route::get('/quiz-details/{detail}', [adminQuizController::class, 'quizDetails'])->name('quizDetails');
+    Route::get('/disability', [adminQuizController::class, 'disability'])->name('disability');
+    Route::post('/disability/create', [adminQuizController::class, 'disabilityCreate'])->name('disabilty-create');
 });
 
 Route::middleware (['auth', judgeRole::class])->group(function (){
@@ -49,16 +51,5 @@ Route::middleware(['auth', CheckNormalUserRole::class])->group(function () {
     Route::post('/quiz', [quizController::class, 'questionAnswer'])->name('submit-answer');
     Route::get('/final-score', [quizController::class, 'score'])->name('final-score');
 });
-// Route::get('/home', [QuizController::class, 'getQuizTakers'])->name('takers');
-//     // question
-//     Route::get('/question',[questionController::class, 'listOfQuestion'])->name('question');
-//     Route::get('/question/create',[questionController::class, 'formQuestion'])->name('question-form');
-//     Route::post('/question',[questionController::class, 'addQuestion'])->name('add-question');
-//     Route::get('/question/{question}/edit',[questionController::class, 'editQuestion'])->name('edit-question');
-//     Route::put('/question/{question}/update',[questionController::class, 'updateQuestion'])->name('update-question');
-//     Route::delete('/question/{question}/delete',[questionController::class, 'deleteQuestion'])->name('delete-question');
-//     Route::get('/quiz-details/{detail}', [QuizController::class, 'quizDetails'])->name('quizDetails');
-//     Route::get('/quiz', [QuizController::class, 'quiz'])->name('quiz');
-//     Route::post('/quiz', [QuizController::class, 'questionAnswer'])->name('submit-answer');
-//     Route::get('/final-score', [QuizController::class, 'score'])->name('final-score');
+
 Route::get('unauthorized', [unauthorizedAccess::class, 'unauthorized'])->name('unauthorized')->middleware('auth');
