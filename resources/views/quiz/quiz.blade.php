@@ -13,7 +13,7 @@
         var timerBar = document.getElementById('timer-bar');
         var radioButtons = document.querySelectorAll('input[type="radio"]');
         var remainingTimeInput = document.getElementById('remaining-time');
-        var timeLeft = 1;
+        var timeLeft = 30;
         var timerInterval = setInterval(updateTimer, 1000);
 
         function updateTimer() {
