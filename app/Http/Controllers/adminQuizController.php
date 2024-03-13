@@ -95,28 +95,46 @@ class adminQuizController extends Controller
         $totalQuestionsCount = $userAnswers->count();
         $correctAnswersCount = $userAnswers->where('is_correct', true)->count();
         $incorrectAnswersCount = $userAnswers->where('is_correct', false)->count();
-
+    
         $secondExamScore = DB::table('score')
             ->where('user_scoreId', $userId)
             ->where('examType', 'second')
             ->value('score');
-
+    
         $thirdExamScore = DB::table('score')
             ->where('user_scoreId', $userId)
             ->where('examType', 'third')
             ->value('score');
-
-        if ($totalQuestionsCount == 0 || $secondExamScore === null || $thirdExamScore === null) {
+    
+        if ($totalQuestionsCount == 0) {
             return view('examScore', [
                 'showQuizButton' => true,
-                'user' => $user,
-                'secondExamNotAvailable' => true,
-                'thirdExamNotAvailable' => true,
+                'user' => $user
             ]);
         }
     
         $totalScore = ($correctAnswersCount / $totalQuestionsCount) * 100;
-        $overAll = (($totalScore + $secondExamScore + $thirdExamScore)/3) * 1;
+    
+        $secondExamNotAvailable = $secondExamScore === null;
+        $thirdExamNotAvailable = $thirdExamScore === null;
+    
+        if ($totalScore !== null) {
+            if (!$secondExamNotAvailable) {
+                if (!$thirdExamNotAvailable) {
+                    $overAll = ($totalScore + $secondExamScore + $thirdExamScore) / 3;
+                } else {
+                    $overAll = ($totalScore + $secondExamScore) / 2;
+                }
+            } else {
+                if (!$thirdExamNotAvailable) {
+                    $overAll = ($totalScore + $thirdExamScore) / 2;
+                } else {
+                    $overAll = $totalScore;
+                }
+            }
+        } else {
+            $overAll = null;
+        }
     
         return view('examScore', [
             'totalScore' => $totalScore,
