@@ -72,10 +72,10 @@
         </nav>
         <div class="container-fluid"> 
             <div class="row justify-content-center">
-                <img src="{{ asset('imgs/IT-white.png') }}" class="img-fluid" alt="IT logo" style="width:10%">
-                <img src="{{ asset('imgs/IT-white.png') }}" class="img-fluid" alt="IT logo" style="width:10%">
-                <img src="{{ asset('imgs/IT-white.png') }}" class="img-fluid" alt="IT logo" style="width:10%">
-                <img src="{{ asset('imgs/IT-white.png') }}" class="img-fluid" alt="IT logo" style="width:10%">
+                <img src="{{ asset('imgs/deped.png') }}" class="img-fluid" alt="IT logo" style="width:10%">
+                <img src="{{ asset('imgs/tibagan.png') }}" class="img-fluid" alt="IT logo" style="width:10%">
+                <img src="{{ asset('imgs/city-logo.png') }}" class="img-fluid" alt="IT logo" style="width:10%">
+                <img src="{{ asset('imgs/PDAO.png') }}" class="img-fluid" alt="IT logo" style="width:10%">
                 <img src="{{ asset('imgs/IT-white.png') }}" class="img-fluid" alt="IT logo" style="width:10%">
             </div><br>
             <div class="row justify-content-center text-justify text-center" style="font-family: 'Kode Mono', monospace;">

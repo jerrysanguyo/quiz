@@ -23,7 +23,7 @@
                                     <td>{{ $taker->total_score }}</td>
                                     <td>{{ $taker->date }}</td>
                                     <td>
-                                        <a href="{{ route('quizDetails', ['detail'=> $taker->id]) }}">
+                                        <a href="{{ route('judgeQuizDetails', ['detail'=> $taker->id]) }}">
                                             <button class="btn btn-primary">
                                                 View details
                                             </button>

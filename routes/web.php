@@ -35,14 +35,14 @@ Route::middleware(['auth', CheckUserRole::class])->group(function () {
     Route::get('/question/{question}/edit',[questionController::class, 'editQuestion'])->name('edit-question');
     Route::put('/question/{question}/update',[questionController::class, 'updateQuestion'])->name('update-question');
     Route::delete('/question/{question}/delete',[questionController::class, 'deleteQuestion'])->name('delete-question');
-    Route::get('/quiz-details/{detail}', [adminQuizController::class, 'quizDetails'])->name('quizDetails');
+    Route::get('/quiz-details/{detail}', [adminQuizController::class, 'quizDetails'])->name('adminQuizDetails');
     Route::get('/disability', [adminQuizController::class, 'disability'])->name('disability');
     Route::post('/disability/create', [adminQuizController::class, 'disabilityCreate'])->name('disabilty-create');
 });
 
 Route::middleware (['auth', judgeRole::class])->group(function (){
     Route::get('/Judge-Dashboard', [adminQuizController::class, 'getQuizTakers'])->name('judge-dashboard');
-    Route::get('/Judge-quiz-details/{detail}', [adminQuizController::class, 'quizDetails'])->name('quizDetails');
+    Route::get('/Judge-quiz-details/{detail}', [adminQuizController::class, 'quizDetails'])->name('judgeQuizDetails');
 });
 
 Route::middleware(['auth', CheckNormalUserRole::class])->group(function () {
