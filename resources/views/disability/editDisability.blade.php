@@ -14,7 +14,7 @@
                             @endforeach
                         </ul>
                     @endif
-                    <form method="post" action="{{ route('update-disability', ['disability'=>$disability]) }}">
+                    <form method="post" action="{{ route('update-disability', ['disability' => $disability]) }}">
                         @csrf
                         @method('put')
                         <div class="col-md-12">

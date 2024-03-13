@@ -25,11 +25,28 @@
                                     <td>{{ $taker->total_score }}</td>
                                     <td>{{ $taker->date }}</td>
                                     <td>
+                                        @if(Auth::User()->type === 'admin')
+                                        
+                                        <div class="dropdown">
+                                            <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                                Action
+                                            </button>
+                                            <ul class="dropdown-menu">
+                                                <li>
+                                                    <a href="{{ route('adminQuizDetails', ['detail' => $taker]) }}" class="dropdown-item">View Details</a>
+                                                </li>
+                                                <li>
+                                                    <a href="{{ route('score-index', ['score'=> $taker]) }}" class="dropdown-item">Add Scores</a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                        @else
                                         <a href="{{ route('adminQuizDetails', ['detail'=> $taker->id]) }}">
                                             <button class="btn btn-primary">
                                                 View details
                                             </button>
                                         </a>
+                                        @endif
                                     </td>
                                 </tr>
                             @endforeach

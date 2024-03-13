@@ -7,6 +7,7 @@ use App\Http\Controllers\quizController;
 use App\Http\Controllers\judgeController;
 use App\Http\Controllers\unauthorizedAccess;
 use App\Http\Controllers\superAdminController;
+use App\Http\Controllers\examScoreController;
 use App\Http\Middleware\CheckNormalUserRole;
 use App\Http\Middleware\CheckUserRole;
 use App\Http\Middleware\judgeRole;
@@ -43,6 +44,9 @@ Route::middleware(['auth', CheckUserRole::class])->group(function () {
     Route::delete('/disability/{disability}/delete',[adminQuizController::class, 'deleteDisabiltiy'])->name('delete-disability');
     Route::get('/disability/{disability}/edit',[adminQuizController::class, 'editDisability'])->name('edit-disability');
     Route::put('/disability/{disability}/update',[adminQuizController::class, 'updateDisability'])->name('update-disability');
+    Route::get('/score/{score}',[adminQuizController::class, 'scoreIndex'])->name('score-index');
+    Route::post('/score/second',[adminQuizController::class, 'secondScoreAdd'])->name('second-score-add');
+    Route::post('/score/third',[adminQuizController::class, 'thirdScoreAdd'])->name('third-score-add');
 });
 
 Route::middleware (['auth', judgeRole::class])->group(function (){

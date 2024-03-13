@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\quiz;
 use App\Models\User;
 use App\Models\disability;
+use App\Models\score;
 use Illuminate\Support\Facades\DB;
 
 class adminQuizController extends Controller
@@ -79,5 +80,76 @@ class adminQuizController extends Controller
 
     public function editDisability(Disability $disability) {
         return view('disability.editDisability', ['disability'=>$disability]);
+    }
+
+    public function scoreIndex(Request $request, $userId) {
+        $user = User::findOrFail($userId); 
+    
+        $userAnswers = DB::table('user_answer')
+            ->join('question', 'user_answer.question_id', '=', 'question.id')
+            ->select('question.qDescription as question', 'user_answer.result as result', 'user_answer.answer as answer', 'user_answer.time_spent as timespent', DB::raw('(user_answer.answer = question.qAnswer) as is_correct'))
+            ->where('user_id', $userId)
+            ->whereIn('user_answer.result', [0, 1])
+            ->get();
+    
+        $totalQuestionsCount = $userAnswers->count();
+        $correctAnswersCount = $userAnswers->where('is_correct', true)->count();
+        $incorrectAnswersCount = $userAnswers->where('is_correct', false)->count();
+
+        $secondExamScore = DB::table('score')
+            ->where('user_scoreId', $userId)
+            ->where('examType', 'second')
+            ->value('score');
+
+        $thirdExamScore = DB::table('score')
+            ->where('user_scoreId', $userId)
+            ->where('examType', 'third')
+            ->value('score');
+
+        if ($totalQuestionsCount == 0 || $secondExamScore === null || $thirdExamScore === null) {
+            return view('examScore', [
+                'showQuizButton' => true,
+                'user' => $user,
+                'secondExamNotAvailable' => true,
+                'thirdExamNotAvailable' => true,
+            ]);
+        }
+    
+        $totalScore = ($correctAnswersCount / $totalQuestionsCount) * 100;
+        $overAll = (($totalScore + $secondExamScore + $thirdExamScore)/3) * 1;
+    
+        return view('examScore', [
+            'totalScore' => $totalScore,
+            'secondExamScore' => $secondExamScore, 
+            'thirdExamScore' => $thirdExamScore,
+            'overAll' => $overAll,
+            'user' => $user 
+        ]);
+    }
+
+    public function secondScoreAdd(Request $request) {
+        $data = $request->validate([
+            'user_scoreId' => 'required',
+            'score' => 'required',
+        ]);
+        $data['added_by'] = auth()->user()->id;
+        $data['examType'] = 'second';
+    
+        $addSecond = Score::create($data);
+    
+        return redirect()->route('takers');
+    }
+
+    public function thirdScoreAdd(Request $request) {
+        $data = $request->validate([
+            'user_scoreId' => 'required',
+            'score' => 'required',
+        ]);
+        $data['added_by'] = auth()->user()->id;
+        $data['examType'] = 'Third';
+    
+        $addSecond = Score::create($data);
+    
+        return redirect()->route('takers');
     }
 }
