@@ -9,9 +9,6 @@ use App\Models\User;
 
 class quizController extends Controller
 {
-    // public function userHome() {
-    //     return view('userHome');
-    // }
 
     public function score() {
         $userId = auth()->id();
