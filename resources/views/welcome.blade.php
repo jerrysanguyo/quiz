@@ -44,7 +44,13 @@
                     <div class="ml-3">
                     @if (Route::has('login'))
                         @auth
-                        <a href="{{ url('/home') }}" class=""><button class="btn btn-primary">Home</button></a>
+                            @if(auth()->user()->type === 'admin')
+                            <a href="{{ url('/home') }}" class=""><button class="btn btn-primary">Home</button></a>
+                            @elseif(auth()->user()->type === 'judge')
+                            <a href="{{ url('/Judge-Dashboard') }}" class=""><button class="btn btn-primary">Home</button></a>
+                            @else(auth()->user()->type === 'user')
+                            <a href="{{ url('/user-home') }}" class=""><button class="btn btn-primary">Home</button></a>
+                            @endif
                         <a class="" href="{{ route('logout') }}"
                             onclick="event.preventDefault();
                             document.getElementById('logout-form').submit();">
