@@ -23,7 +23,7 @@
                         </div>
                         <div class="col-md-12">
                             <label class="form-label">Question Number:</label>
-                            <input class="form-control" type="number" name="qNumber" />
+                            <input class="form-control" type="number" name="qNumber" value="{{ $lastQNumber + 1 }}" readonly/>
                         </div>
                         <div class="col-md-12">
                             <label class="form-label">Question:</label>

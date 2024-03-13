@@ -14,7 +14,10 @@ class questionController extends Controller
     }
 
     public function formQuestion() {
-        return view('pages.addQuestion');
+        $lastQuestion = Question::latest()->first(); // Retrieve the last question
+        $lastQNumber = $lastQuestion ? $lastQuestion->qNumber : 0; // Get the qNumber of the last question, or default to 0 if there are no questions yet
+        
+        return view('pages.addQuestion', ['lastQNumber' => $lastQNumber]);
     }
 
     public function addQuestion(Request $request) {
