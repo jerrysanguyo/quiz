@@ -9,9 +9,10 @@ use App\Models\User;
 
 class quizController extends Controller
 {
-    public function userHome() {
-        return view('userHome');
-    }
+    // public function userHome() {
+    //     return view('userHome');
+    // }
+
     public function score() {
         $userId = auth()->id();
         if (!$userId) {
@@ -34,7 +35,6 @@ class quizController extends Controller
             'incorrectAnswersCount' => $incorrectAnswersCount
         ]);
     }
-    
     
     public function quiz() {
         $userId = auth()->id();
@@ -85,5 +85,35 @@ class quizController extends Controller
         $newAnswer = Quiz::create($data);
 
         return redirect(route('quiz'));
+    }
+
+    public function userHome() {
+        $userId = auth()->id();
+        if (!$userId) {
+            return redirect()->route('quiz')->with('error', 'Unable to fetch user ID.');
+        }
+    
+        $userAnswers = DB::table('user_answer')
+            ->join('question', 'user_answer.question_id', '=', 'question.id')
+            ->select('question.qDescription as question', 'user_answer.result as result', 'user_answer.answer as answer', 'user_answer.time_spent as timespent', DB::raw('(user_answer.answer = question.qAnswer) as is_correct'))
+            ->where('user_id', $userId)
+            ->whereIn('user_answer.result', [0, 1])
+            ->get();
+    
+        $totalQuestionsCount = $userAnswers->count();
+        $correctAnswersCount = $userAnswers->where('is_correct', true)->count();
+        $incorrectAnswersCount = $userAnswers->where('is_correct', false)->count();
+    
+        if ($totalQuestionsCount == 0) {
+            return view('userHome', [
+                'showQuizButton' => true
+            ]);
+        }
+    
+        $totalScore = ($correctAnswersCount / $totalQuestionsCount) * 100;
+    
+        return view('userHome', [
+            'totalScore' => $totalScore
+        ]);
     }
 }
