@@ -45,6 +45,8 @@ class LoginController extends Controller
             return redirect()->route('takers');
         } elseif($user->type === 'judge') {
             return redirect()->route('judge-dashboard');
+        } elseif($user->type === 'superadmin') {
+            return redirect()->route('superadmin-dashboard');
         }
         
         return redirect()->route('user-home');

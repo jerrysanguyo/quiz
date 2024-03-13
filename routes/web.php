@@ -6,9 +6,11 @@ use App\Http\Controllers\adminQuizController;
 use App\Http\Controllers\quizController;
 use App\Http\Controllers\judgeController;
 use App\Http\Controllers\unauthorizedAccess;
+use App\Http\Controllers\superAdminController;
 use App\Http\Middleware\CheckNormalUserRole;
 use App\Http\Middleware\CheckUserRole;
 use App\Http\Middleware\judgeRole;
+use App\Http\Middleware\superAdminRole;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -53,6 +55,14 @@ Route::middleware(['auth', CheckNormalUserRole::class])->group(function () {
     Route::get('/quiz', [quizController::class, 'quiz'])->name('quiz');
     Route::post('/quiz', [quizController::class, 'questionAnswer'])->name('submit-answer');
     Route::get('/final-score', [quizController::class, 'score'])->name('final-score');
+});
+
+Route::middleware(['auth', superAdminRole::class])->group(function (){
+    Route::get('/superadmin-dashboard', [superAdminController::class, 'superIndex'])->name('superadmin-dashboard');
+    Route::post('/superadmin-dashboard/create', [superAdminController::class, 'accCreate'])->name('acc-reg');
+    Route::put('/superadmin-dashboard/{userId}/update-judge', [superAdminController::class, 'updateJudge'])->name('update-judge');
+    Route::put('/superadmin-dashboard/{userId}/update-admin', [superAdminController::class, 'updateAdmin'])->name('update-admin');
+    Route::delete('/superadmin-dashboard/{userId}/delete-user', [superAdminController::class, 'deleteUser'])->name('delete-user');
 });
 
 Route::get('unauthorized', [unauthorizedAccess::class, 'unauthorized'])->name('unauthorized')->middleware('auth');

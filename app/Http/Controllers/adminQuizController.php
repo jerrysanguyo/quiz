@@ -16,7 +16,7 @@ class adminQuizController extends Controller
                             })
                           ->leftJoin(DB::raw('(SELECT user_id, SUM(result) AS total_score FROM user_answer GROUP BY user_id) AS scores'), 'users.id', '=', 'scores.user_id')
                           ->leftJoin('disabilities', 'users.disability_id', '=', 'disabilities.id') 
-                          ->whereNotIn('users.type', ['admin', 'judge'])
+                          ->whereNotIn('users.type', ['admin', 'judge', 'superadmin'])
                           ->select('users.id', 'users.name', 'disabilities.disability_name as disability_name', DB::raw('DATE(max_dates.max_created_at) AS date'), 'scores.total_score')
                           ->groupBy('disability_name', 'quiz.users.id','quiz.users.name', 'date', 'scores.total_score')
                           ->get();

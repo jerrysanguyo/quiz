@@ -8,7 +8,7 @@
                 <div class="card-header d-flex justify-content-between ">
                     <h1>List of disability</h1>
                     <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
-                        Add account
+                        Add disability
                     </button>
                     <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                         <div class="modal-dialog">

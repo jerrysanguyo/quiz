@@ -9,7 +9,6 @@ use App\Models\User;
 
 class quizController extends Controller
 {
-
     public function score() {
         $userId = auth()->id();
         if (!$userId) {
