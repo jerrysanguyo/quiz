@@ -70,14 +70,28 @@
                 </div>
             </div>
         </nav>
-        <div class="container-fluid"> 
+        <div class="container"> 
             <div class="row justify-content-center">
-                <img src="{{ asset('imgs/deped.png') }}" class="img-fluid" alt="IT logo" style="width:10%">
-                <img src="{{ asset('imgs/tibagan.png') }}" class="img-fluid" alt="IT logo" style="width:10%">
-                <img src="{{ asset('imgs/city-logo.png') }}" class="img-fluid" alt="IT logo" style="width:10%">
-                <img src="{{ asset('imgs/PDAO.png') }}" class="img-fluid" alt="IT logo" style="width:10%">
-                <img src="{{ asset('imgs/IT-white.png') }}" class="img-fluid" alt="IT logo" style="width:10%">
-            </div><br>
+                <div class="row">
+                    <div class="col-md-3">
+                        <img src="{{ asset('imgs/deped.png') }}" class="img-fluid" alt="IT logo" style="width:100%">
+                    </div>
+                    <div class="col-md-3" style="margin-right:-5%">
+                        <img src="{{ asset('imgs/tibagan.png') }}" class="img-fluid" alt="IT logo" style="width:75%">
+                    </div>
+                    <div class="col-md-2">
+                        <img src="{{ asset('imgs/city-logo.png') }}" class="img-fluid" alt="IT logo" style="width:100%">
+                    </div>
+                    <div class="col-md-2">
+                        <img src="{{ asset('imgs/PDAO.png') }}" class="img-fluid" alt="IT logo" style="width:100%">
+                    </div>
+                    <div class="col-md-2">
+                        <img src="{{ asset('imgs/IT-white.png') }}" class="img-fluid" alt="IT logo" style="width:100%">
+                    </div>
+                </div>
+            </div>
+        </div><br>
+        <div class="container-fluid"> 
             <div class="row justify-content-center text-justify text-center" style="font-family: 'Kode Mono', monospace;">
                 <p class="display-1 glowing-text">LOCAL I.T.</p><br>
                 <p class="display-1 glowing-text">ASSESSMENT</p><br>
