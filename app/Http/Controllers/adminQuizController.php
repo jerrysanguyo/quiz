@@ -15,11 +15,13 @@ class adminQuizController extends Controller
                                 $join->on('users.id', '=', 'max_dates.user_id');
                             })
                           ->leftJoin(DB::raw('(SELECT user_id, SUM(result) AS total_score FROM user_answer GROUP BY user_id) AS scores'), 'users.id', '=', 'scores.user_id')
+                          ->leftJoin('disabilities', 'users.disability_id', '=', 'disabilities.id') 
                           ->whereNotIn('users.type', ['admin', 'judge'])
-                          ->select('users.id', 'users.name', DB::raw('DATE(max_dates.max_created_at) AS date'), 'scores.total_score')
+                          ->select('users.id', 'users.name', 'disabilities.disability_name as disability_name', DB::raw('DATE(max_dates.max_created_at) AS date'), 'scores.total_score')
+                          ->groupBy('disability_name', 'quiz.users.id','quiz.users.name', 'date', 'scores.total_score')
                           ->get();
-
-        $view = auth()->user()->type === 'admin' ? 'home' : 'judge.index';
+    
+        $view = auth()->user()->type === 'admin' ? 'home' : 'judge.index'; 
         return view($view, ['takers' => $takers]);  
     }
 
@@ -46,7 +48,8 @@ class adminQuizController extends Controller
     }
 
     public function disability() {
-        return view('disability.index');
+        $listOfDisability = disability::all();
+        return view('disability.index', ['listOfDisability' => $listOfDisability]);
     }
 
     public function disabilityCreate(Request $request){
@@ -57,5 +60,24 @@ class adminQuizController extends Controller
         $newQuestion = disability::create($data);
 
         return redirect(route('disability'));
+    }
+
+    public function updateDisability(Disability $disability, Request $request) {
+        $updateData=$request->validate([
+            'disability_name'=>'string',
+        ]);
+
+        $disability->update($updateData);
+
+        return redirect(route('disability'))->with('success', 'Disability updated successfully!');
+    }
+
+    public function deleteDisabiltiy (Disability $disability) {
+        $disability->delete();
+        return redirect(route('disability'))->with('success', 'Disability deleted successfully!');
+    }
+
+    public function editDisability(Disability $disability) {
+        return view('disability.editDisability', ['disability'=>$disability]);
     }
 }

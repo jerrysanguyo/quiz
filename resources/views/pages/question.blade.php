@@ -12,11 +12,11 @@
                         <a href="{{ route('question-form') }}">
                             <button class="btn btn-primary">Add question</button>
                         </a>
-                    </div>
+                    </div><br>
                     <div class="row">
                         @if(session()->has('success'))
                         <div class="col-md-12">
-                            {{ session('success') }}
+                            <div class="alert alert-success">{{ session('success') }}</div>
                         </div>
                         @endif
                     </div>
@@ -42,12 +42,23 @@
                                 <td>{{ $questions->qChoicesC }}</td>
                                 <td>{{ $questions->qChoicesD }}</td>
                                 <td>
-                                    <a href="{{ route('edit-question', ['question' => $questions]) }}"><button class="btn btn-success">Edit</button></a>
-                                    <form method="post" action="{{ route('delete-question', ['question'=>$questions]) }}">
-                                        @csrf
-                                        @method('delete')
-                                        <input class="btn btn-danger" type="submit" value="Delete" />
-                                    </form>
+                                    <div class="dropdown">
+                                        <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                            Action
+                                        </button>
+                                        <ul class="dropdown-menu">
+                                            <li>
+                                                <a href="{{ route('edit-question', ['question' => $questions]) }}" class="dropdown-item">Edit</a>
+                                            </li>
+                                            <li>
+                                                <form method="post" action="{{ route('delete-question', ['question'=>$questions]) }}">
+                                                    @csrf
+                                                    @method('delete')
+                                                    <button type="submit" class="dropdown-item">Delete</button>
+                                                </form>
+                                            </li>
+                                        </ul>
+                                    </div>
                                 </td>
                             </tr>
                             @endforeach

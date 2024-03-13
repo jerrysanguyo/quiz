@@ -5,12 +5,13 @@
     <div class="row justify-content-center">
         <div class="col-md-8">
             <div class="card">
-                <div class="card-header">{{ __('List of exam takers') }}</div>
+                <div class="card-header d-flex justify-content-center align-items-center"><h1>{{ __('List of exam takers') }}</h1></div>
                 <div class="card-body">
                     <table class="table">
                         <thead>
                             <tr>
                                 <th>Full name</th>
+                                <th>Disability</th>
                                 <th>Score</th>
                                 <th>Date taken</th>
                                 <th>Action</th>
@@ -20,6 +21,7 @@
                             @foreach ($takers as $taker)
                                 <tr>
                                     <td>{{ $taker->name }} </td>
+                                    <td>{{ $taker->disability_name }} </td>
                                     <td>{{ $taker->total_score }}</td>
                                     <td>{{ $taker->date }}</td>
                                     <td>

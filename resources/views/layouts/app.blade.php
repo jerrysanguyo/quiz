@@ -8,6 +8,15 @@
     <link rel="dns-prefetch" href="//fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=Nunito" rel="stylesheet">
     @vite(['resources/sass/app.scss', 'resources/js/app.js'])
+    <style>
+        body {
+                background-image: url('{{ asset('imgs/bg-plain.webp') }}');
+                background-size: cover;
+                background-repeat: no-repeat;
+                background-attachment: fixed; 
+                background-position: center; 
+            }
+    </style>
 </head>
 <body>
     <div id="app">

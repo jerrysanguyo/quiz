@@ -38,6 +38,9 @@ Route::middleware(['auth', CheckUserRole::class])->group(function () {
     Route::get('/quiz-details/{detail}', [adminQuizController::class, 'quizDetails'])->name('adminQuizDetails');
     Route::get('/disability', [adminQuizController::class, 'disability'])->name('disability');
     Route::post('/disability/create', [adminQuizController::class, 'disabilityCreate'])->name('disabilty-create');
+    Route::delete('/disability/{disability}/delete',[adminQuizController::class, 'deleteDisabiltiy'])->name('delete-disability');
+    Route::get('/disability/{disability}/edit',[adminQuizController::class, 'editDisability'])->name('edit-disability');
+    Route::put('/disability/{disability}/update',[adminQuizController::class, 'updateDisability'])->name('update-disability');
 });
 
 Route::middleware (['auth', judgeRole::class])->group(function (){

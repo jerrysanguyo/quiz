@@ -38,8 +38,52 @@
                     </div>
                     <!-- end modal admin registration -->
                 </div>
-                <div class="card-body">
-                    
+                <div class="card-body"><br>
+                    <div class="row">
+                        @if(session()->has('success'))
+                        <div class="col-md-12">
+                            <div class="alert alert-success">{{ session('success') }}</div>
+                        </div>
+                        @endif
+                    </div>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Id</th>
+                                <th>Disability Name</th>
+                                <th>Date and Time added</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($listOfDisability as $disability)
+                            <tr>
+                                <td>{{ $disability->id }}</td>
+                                <td>{{ $disability->disability_name }}</td>
+                                <td>{{ $disability->created_at }}</td>
+                                <td>
+                                    <div class="dropdown">
+                                        <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                            Action
+                                        </button>
+                                        <ul class="dropdown-menu">
+                                            <li>
+                                                <a href="{{ route('edit-disability', ['disability' => $disability]) }}" class="dropdown-item">Edit</a>
+                                            </li>
+                                            <li>
+                                                <form method="post" action="{{ route('delete-disability', ['disability'=>$disability]) }}">
+                                                    @csrf
+                                                    @method('delete')
+                                                    <button type="submit" class="dropdown-item">Delete</button>
+                                                </form>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </td>
+                            </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
