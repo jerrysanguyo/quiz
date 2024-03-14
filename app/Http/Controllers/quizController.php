@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\question;
 use App\Models\quiz;
 use App\Models\User;
+use App\Models\score;
 
 class quizController extends Controller
 {
@@ -89,20 +90,30 @@ class quizController extends Controller
         if (!$userId) {
             return redirect()->route('quiz')->with('error', 'Unable to fetch user ID.');
         }
-    
-        $user = User::with(['answers.question'])->findOrFail($userId);
-    
+
+        $user = User::with(['answers.question', 'scores']) 
+                    ->findOrFail($userId);
+
         $correctAnswersCount = $user->answers->reduce(function ($carry, $item) {
             return $carry + (($item->answer === $item->question->qAnswer) ? 1 : 0);
         }, 0);
-    
+
         $totalQuestionsCount = $user->answers->count();
         $incorrectAnswersCount = $totalQuestionsCount - $correctAnswersCount;
-    
+
         $totalScore = $totalQuestionsCount ? round(($correctAnswersCount / $totalQuestionsCount) * 100, 2) : null;
-    
+
+        $secondExamScore = optional($user->scores->where('examType', 'second')->first())->score;
+        $thirdExamScore = optional($user->scores->where('examType', 'third')->first())->score;
+
+        $scores = array_filter([$totalScore, $secondExamScore, $thirdExamScore], function($value) {
+            return !is_null($value);
+        });
+
+        $overAll = $scores ? round(array_sum($scores) / count($scores), 2) : null;
+
         $showQuizButton = $totalQuestionsCount === 0;
-    
-        return view('userHome', compact('totalScore', 'showQuizButton'));
+
+        return view('userHome', compact('totalScore', 'showQuizButton', 'secondExamScore', 'thirdExamScore', 'overAll'));
     }
 }
