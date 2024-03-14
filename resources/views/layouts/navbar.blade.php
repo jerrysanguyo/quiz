@@ -5,6 +5,8 @@
                 <a class="navbar-brand" href="{{ url('home') }}">
             @elseif(auth()->user()->type === 'user')
                 <a class="navbar-brand" href="{{ url('user-home') }}">
+            @elseif(auth()->user()->type === 'superadmin')
+                <a class="navbar-brand" href="{{ url('superadmin-dashboard') }}">
             @else
                 <a href="{{ url('Judge-Dashboard') }}" class="navbar-brand">
             @endif

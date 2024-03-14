@@ -10,7 +10,6 @@ class superAdminController extends Controller
     public function superIndex(Request $request) {
         $search = $request->input('search');
         
-        // Query to fetch users with optional search
         $query = User::query();
     
         if ($search) {
@@ -18,21 +17,24 @@ class superAdminController extends Controller
                   ->orWhere('email', 'like', '%'.$search.'%');
         }
     
-        // Paginate the filtered users
         $listOfUser = $query->paginate(5);
         
         return view('superAdmin.index', ['listOfUser' => $listOfUser, 'search' => $search]);
     }
 
     public function accCreate(Request $request) {
-        $data=$request->validate([
-            'name'=>'required',
-            'email'=>'required',
-            'password'=>'required',
-            'type'=>'required',
+        $data = $request->validate([
+            'name' => 'required',
+            'email' => 'required|email|unique:users,email',
+            'password' => 'required',
+            'type' => 'required',
         ]);
+    
+        $data['password'] = bcrypt($data['password']);
+    
         $newAcc = User::create($data);
-        return redirect(route('acc-reg'))->with('success', 'Account has been registered successfully!');
+    
+        return redirect()->route('superadmin-dashboard')->with('success', 'Account has been registered successfully!');
     }
 
     public function updateJudge(Request $request, $userId) {

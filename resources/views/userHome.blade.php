@@ -30,11 +30,8 @@
                     <h4>Score for Second Assessment</h4>
                     <hr>
                     <div class="row text-center">
-                        <div class="col-md-6">
-                            <h1>80%</h1>
-                        </div>
-                        <div class="col-md-6">
-                            <button class="btn btn-primary">View details</button>
+                        <div class="col-md-12">
+                            <h1>{{ $secondExamScore ?? 'N/A' }}</h1>
                         </div>
                     </div>
                 </div>
@@ -42,15 +39,12 @@
         </div>
         <div class="col-md-4">
             <div class="card">
-                <div class="card-body">
+            <div class="card-body">
                     <h4>Score for Third Assessment</h4>
                     <hr>
                     <div class="row text-center">
-                        <div class="col-md-6">
-                            <h1>80%</h1>
-                        </div>
-                        <div class="col-md-6">
-                            <button class="btn btn-primary">View details</button>
+                        <div class="col-md-12">
+                            <h1>{{ $thirdExamScore ?? 'N/A' }}</h1>
                         </div>
                     </div>
                 </div>
@@ -63,12 +57,13 @@
                 <div class="card-body">
                     <h4>Total score in all Assessments</h4>
                     <hr>
-                    <div class="row text-center">
+                    <div class="row justify-content-center align-items-center text-center">
                         <div class="col-md-6">
-                            <h1>80%</h1>
-                        </div>
-                        <div class="col-md-6">
-                            <button class="btn btn-primary">View details</button>
+                            @if(isset($overAll))
+                                <h1> {{ $overAll }}% </h1>
+                            @else
+                                <h3>Over all score is still computing</h3>
+                            @endif
                         </div>
                     </div>
                 </div>

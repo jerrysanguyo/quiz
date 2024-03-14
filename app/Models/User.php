@@ -12,36 +12,22 @@ class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
-    protected $fillable = [
-        'name',
-        'email',
-        'password',
-        'disability_id',
-        'type'
-    ];
+    protected $fillable = ['name', 'email','password','disability_id','type'];
+    protected $hidden = [ 'password','remember_token', ];
+    protected $casts = [ 'email_verified_at' => 'datetime',   'password' => 'hashed',];
 
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var array<int, string>
-     */
-    protected $hidden = [
-        'password',
-        'remember_token',
-    ];
+    public function disability()
+    {
+        return $this->belongsTo(Disability::class, 'disability_id');
+    }
+    
+    public function scores()
+    {
+        return $this->hasMany(Score::class, 'user_scoreId');
+    }
 
-    /**
-     * The attributes that should be cast.
-     *
-     * @var array<string, string>
-     */
-    protected $casts = [
-        'email_verified_at' => 'datetime',
-        'password' => 'hashed',
-    ];
+    public function answers()
+    {
+        return $this->hasMany(Quiz::class, 'user_id');
+    }
 }

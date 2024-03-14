@@ -8,166 +8,135 @@ use App\Models\User;
 use App\Models\disability;
 use App\Models\score;
 use Illuminate\Support\Facades\DB;
+use App\Http\Requests\DisabilityRequest;
+use App\Http\Requests\ScoreRequest;
 
 class adminQuizController extends Controller
 {
-    public function getQuizTakers() {
-        $takers = User::leftJoin(DB::raw('(SELECT user_id, MAX(created_at) as max_created_at FROM user_answer GROUP BY user_id) as max_dates'), function($join) {
-                                $join->on('users.id', '=', 'max_dates.user_id');
-                            })
-                          ->leftJoin(DB::raw('(SELECT user_id, SUM(result) AS total_score FROM user_answer GROUP BY user_id) AS scores'), 'users.id', '=', 'scores.user_id')
-                          ->leftJoin('disabilities', 'users.disability_id', '=', 'disabilities.id') 
-                          ->whereNotIn('users.type', ['admin', 'judge', 'superadmin'])
-                          ->select('users.id', 'users.name', 'disabilities.disability_name as disability_name', DB::raw('DATE(max_dates.max_created_at) AS date'), 'scores.total_score')
-                          ->groupBy('disability_name', 'quiz.users.id','quiz.users.name', 'date', 'scores.total_score')
-                          ->get();
-    
-        $view = auth()->user()->type === 'admin' ? 'home' : 'judge.index'; 
-        return view($view, ['takers' => $takers]);  
+    public function getQuizTakers()
+    {
+        $takers = User::with(['disability', 'answers.question', 'scores'])
+                        ->whereNotIn('type', ['admin', 'judge', 'superadmin'])
+                        ->get()
+                        ->map(function ($user) {
+                            $firstAssessmentScore = $this->calculateFirstAssessmentScoreForUser($user);
+                            $totalScores = $user->scores->sum('score');
+                            $overallScore = ($firstAssessmentScore + $totalScores) / 3; 
+                            $user->overall_score = round($overallScore, 2);
+                            return $user;
+                        });
+
+        $view = auth()->user()->type === 'admin' ? 'home' : 'judge.index';
+        return view($view, compact('takers'));
     }
 
-    public function quizDetails(Request $request) {
-        $takerId = $request->route('detail'); 
-        $userAnswers = quiz::where('user_id', $takerId)->get();
+    protected function calculateFirstAssessmentScoreForUser($user)
+    {
+        $totalQuestions = $user->answers->count();
+        if ($totalQuestions === 0) {
+            return 0;
+        }
+
+        $correctAnswersCount = $user->answers->reduce(function ($carry, $item) {
+            return $carry + ($item->answer === $item->question->qAnswer ? 1 : 0);
+        }, 0);
+
+        return round(($correctAnswersCount / $totalQuestions) * 100, 2);
+    }
+
+    public function quizDetails(Request $request)
+    {
+        $userId = $request->route('detail');
+        $user = User::with(['answers.question'])->findOrFail($userId);
     
-        $userAnswers = DB::table('user_answer')
-            ->join('question', 'user_answer.question_id', '=', 'question.id')
-            ->select('question.qDescription as question', 'user_answer.result as result', 'user_answer.answer as answer', 'user_answer.time_spent as timespent', DB::raw('(user_answer.answer = question.qAnswer) as is_correct'))
-            ->where('user_id', $takerId)
-            ->whereIn('user_answer.result', [0, 1])
-            ->get();
+        $userAnswers = $user->answers->each(function ($answer) {
+            $answer->is_correct = $answer->answer == $answer->question->qAnswer;
+        });
     
         $correctAnswersCount = $userAnswers->where('is_correct', true)->count();
         $incorrectAnswersCount = $userAnswers->where('is_correct', false)->count();
-        
+    
         $view = auth()->user()->type === 'admin' ? 'quiz.score' : 'judge.score';
-        return view($view, [
-            'userAnswers' => $userAnswers,
-            'correctAnswersCount' => $correctAnswersCount,
-            'incorrectAnswersCount' => $incorrectAnswersCount
-        ]);
+        return view($view, compact('user', 'userAnswers', 'correctAnswersCount', 'incorrectAnswersCount'));
     }
 
-    public function disability() {
-        $listOfDisability = disability::all();
-        return view('disability.index', ['listOfDisability' => $listOfDisability]);
+    public function disability()
+    {
+        $listOfDisability = Disability::all();
+        return view('disability.index', compact('listOfDisability'));
     }
 
-    public function disabilityCreate(Request $request){
-        $data=$request->validate([
-            'disability_name'=>'required|string'
-        ]);
-
-        $newQuestion = disability::create($data);
-
-        return redirect(route('disability'));
+    public function disabilityCreate(DisabilityRequest $request)
+    {
+        $validatedData = $request->validated();
+        Disability::create($validatedData);
+        return redirect()->route('disability')->with('success', 'Disability created successfully!');
     }
 
-    public function updateDisability(Disability $disability, Request $request) {
-        $updateData=$request->validate([
-            'disability_name'=>'string',
-        ]);
-
-        $disability->update($updateData);
-
-        return redirect(route('disability'))->with('success', 'Disability updated successfully!');
+    public function editDisability(Disability $disability)
+    {
+        return view('disability.editDisability', compact('disability'));
     }
 
-    public function deleteDisabiltiy (Disability $disability) {
+    public function updateDisability(Disability $disability, DisabilityRequest $request)
+    {
+        $disability->update($request->validated());
+        return redirect()->route('disability')->with('success', 'Disability updated successfully!');
+    }
+
+    public function deleteDisability(Disability $disability)
+    {
         $disability->delete();
-        return redirect(route('disability'))->with('success', 'Disability deleted successfully!');
+        return redirect()->route('disability')->with('success', 'Disability deleted successfully!');
     }
 
-    public function editDisability(Disability $disability) {
-        return view('disability.editDisability', ['disability'=>$disability]);
+    public function scoreIndex($userId) 
+    {
+        $user = User::with(['answers.question', 'scores'])->findOrFail($userId);
+    
+        \Log::info('Total Answers Count: ', ['count' => $user->answers->count()]);
+        
+        $correctAnswersCount = $user->answers->reduce(function ($carry, $item) {
+            return $carry + (($item->answer == $item->question->qAnswer) ? 1 : 0);
+        }, 0);
+    
+        $totalQuestionsCount = $user->answers->count();
+        $incorrectAnswersCount = $totalQuestionsCount - $correctAnswersCount;
+        \Log::info('Correct Answers Count: ', ['count' => $correctAnswersCount]);
+    
+        $totalScore = $totalQuestionsCount ? round(($correctAnswersCount / $totalQuestionsCount) * 100, 2) : 0;
+    
+        $secondExamScore = optional($user->scores->where('examType', 'second')->first())->score;
+        $thirdExamScore = optional($user->scores->where('examType', 'third')->first())->score;
+    
+        $scores = array_filter([$totalScore, $secondExamScore, $thirdExamScore], function($value) {
+            return !is_null($value);
+        });
+        
+        $overAll = $scores ? round(array_sum($scores) / count($scores), 2) : null;
+    
+        return view('examScore', compact('user', 'totalScore', 'secondExamScore', 'thirdExamScore', 'overAll'));
     }
 
-    public function scoreIndex(Request $request, $userId) {
-        $user = User::findOrFail($userId); 
-    
-        $userAnswers = DB::table('user_answer')
-            ->join('question', 'user_answer.question_id', '=', 'question.id')
-            ->select('question.qDescription as question', 'user_answer.result as result', 'user_answer.answer as answer', 'user_answer.time_spent as timespent', DB::raw('(user_answer.answer = question.qAnswer) as is_correct'))
-            ->where('user_id', $userId)
-            ->whereIn('user_answer.result', [0, 1])
-            ->get();
-    
-        $totalQuestionsCount = $userAnswers->count();
-        $correctAnswersCount = $userAnswers->where('is_correct', true)->count();
-        $incorrectAnswersCount = $userAnswers->where('is_correct', false)->count();
-    
-        $secondExamScore = DB::table('score')
-            ->where('user_scoreId', $userId)
-            ->where('examType', 'second')
-            ->value('score');
-    
-        $thirdExamScore = DB::table('score')
-            ->where('user_scoreId', $userId)
-            ->where('examType', 'third')
-            ->value('score');
-    
-        if ($totalQuestionsCount == 0) {
-            return view('examScore', [
-                'showQuizButton' => true,
-                'user' => $user
-            ]);
-        }
-    
-        $totalScore = ($correctAnswersCount / $totalQuestionsCount) * 100;
-    
-        $secondExamNotAvailable = $secondExamScore === null;
-        $thirdExamNotAvailable = $thirdExamScore === null;
-    
-        if ($totalScore !== null) {
-            if (!$secondExamNotAvailable) {
-                if (!$thirdExamNotAvailable) {
-                    $overAll = ($totalScore + $secondExamScore + $thirdExamScore) / 3;
-                } else {
-                    $overAll = ($totalScore + $secondExamScore) / 2;
-                }
-            } else {
-                if (!$thirdExamNotAvailable) {
-                    $overAll = ($totalScore + $thirdExamScore) / 2;
-                } else {
-                    $overAll = $totalScore;
-                }
-            }
-        } else {
-            $overAll = null;
-        }
-    
-        return view('examScore', [
-            'totalScore' => $totalScore,
-            'secondExamScore' => $secondExamScore, 
-            'thirdExamScore' => $thirdExamScore,
-            'overAll' => $overAll,
-            'user' => $user 
+    public function secondScoreAdd(Request $request)
+    {
+        Score::create([
+            'user_scoreId' => $request->user_scoreId,
+            'score' => $request->score,
+            'examType' => 'second',
+            'added_by' => auth()->user()->id,
         ]);
+        return redirect()->route('takers')->with('success', 'Second exam score added successfully!');
     }
 
-    public function secondScoreAdd(Request $request) {
-        $data = $request->validate([
-            'user_scoreId' => 'required',
-            'score' => 'required',
+    public function thirdScoreAdd(Request $request)
+    {
+        Score::create([
+            'user_scoreId' => $request->user_scoreId,
+            'score' => $request->score,
+            'examType' => 'third',
+            'added_by' => auth()->user()->id,
         ]);
-        $data['added_by'] = auth()->user()->id;
-        $data['examType'] = 'second';
-    
-        $addSecond = Score::create($data);
-    
-        return redirect()->route('takers');
-    }
-
-    public function thirdScoreAdd(Request $request) {
-        $data = $request->validate([
-            'user_scoreId' => 'required',
-            'score' => 'required',
-        ]);
-        $data['added_by'] = auth()->user()->id;
-        $data['examType'] = 'Third';
-    
-        $addSecond = Score::create($data);
-    
-        return redirect()->route('takers');
+        return redirect()->route('takers')->with('success', 'Third exam score added successfully!');
     }
 }

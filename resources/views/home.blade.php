@@ -20,10 +20,10 @@
                         <tbody>
                             @foreach ($takers as $taker)
                                 <tr>
-                                    <td>{{ $taker->name }} </td>
-                                    <td>{{ $taker->disability_name }} </td>
-                                    <td>{{ $taker->total_score }}</td>
-                                    <td>{{ $taker->date }}</td>
+                                    <td>{{ $taker->name }}</td>
+                                    <td>{{ $taker->disability->disability_name ?? 'N/A' }}</td>
+                                    <td>{{ $taker->overall_score }}</td>
+                                    <td>{{ $taker->answers->max('created_at') ? $taker->answers->max('created_at')->format('Y-m-d') : 'N/A' }}</td>
                                     <td>
                                         @if(Auth::User()->type === 'admin')
                                         

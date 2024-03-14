@@ -9,6 +9,20 @@
         </div>
     </div>
     <div class="row">
+        @if(session('success'))
+        <div class="col-md-12">
+            <div class="alert alert-success">{{ session('success') }}</div>
+        </div>
+        @endif
+        @if(session('error'))
+        <div class="col-md-12">
+            <div class="alert alert-danger">
+                {{ session('error') }}
+            </div>
+        </div>
+        @endif
+    </div>
+    <div class="row">
         <div class="col-md-4">
             <div class="card">
                 <div class="card-body">
@@ -36,7 +50,7 @@
                     <hr>
                     <div class="row text-center">
                         @if(isset($secondExamScore))
-                            <h1>{{ $secondExamScore }}%</h1>
+                            <h1>{{ $secondExamScore ?? 'N/A' }}</h1>
                         @else
                             <form action="{{ route('second-score-add') }}" method="post">
                                 @csrf
@@ -45,7 +59,7 @@
                                     <div class="col-md-12">
                                         <div class="mb-3">
                                             <label for="forScore" class="form-label">Score:</label>
-                                            <input type="text" name="score" id="forScore" class="form-control">
+                                            <input type="number" name="score" id="forScore" class="form-control">
                                             <input type="text" name="user_scoreId" id="" class="form-control" value="{{ $user->id }}" hidden>
                                         </div>
                                     </div>
@@ -68,7 +82,7 @@
                     <hr>
                     <div class="row text-center">
                         @if(isset($thirdExamScore))
-                            <h1>{{ $thirdExamScore }}%</h1>
+                            <h1>{{ $thirdExamScore ?? 'N/A' }}</h1>
                         @else
                             <form action="{{ route('third-score-add') }}" method="post">
                                 @csrf
@@ -77,7 +91,7 @@
                                     <div class="col-md-12">
                                         <div class="mb-3">
                                             <label for="forScore" class="form-label">Score:</label>
-                                            <input type="text" name="score" id="forScore" class="form-control">
+                                            <input type="number" name="score" id="forScore" class="form-control">
                                             <input type="text" name="user_scoreId" id="" class="form-control" value="{{ $user->id }}" hidden>
                                         </div>
                                     </div>

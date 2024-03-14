@@ -11,7 +11,5 @@ class disability extends Model
 
     protected $table ='disabilities';
 
-    protected $fillable = [
-        'disability_name'
-    ];
+    protected $fillable = ['disability_name'];
 }

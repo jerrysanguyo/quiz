@@ -36,10 +36,10 @@
                                 <hr>
                                 @foreach($userAnswers as $answer)
                                     <p>
-                                        <strong>Question:</strong> {{ $answer->question }}<br>
+                                        <strong>Question:</strong> {{ $answer->question->qDescription }}<br>
                                         <strong>Your Answer:</strong> {{ $answer->answer }}<br>
-                                        <strong>Time Spent:</strong> {{ $answer->timespent }} second/s<br>
-                                        <strong>Result:</strong> {{ $answer->is_correct ? 'Correct' : 'Incorrect' }}<br>
+                                        <strong>Time Spent:</strong> {{ $answer->time_spent }} second/s<br>
+                                        <strong>Result:</strong> {{ ($answer->answer == $answer->question->qAnswer) ? 'Correct' : 'Incorrect' }}<br>
                                     </p>
                                 @endforeach
                             @else

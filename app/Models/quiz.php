@@ -10,12 +10,10 @@ class quiz extends Model
     use HasFactory;
 
     protected $table='user_answer';
-
-    protected $fillable=[
-        'user_id',
-        'question_id',
-        'answer',
-        'result',
-        'time_spent'
-    ];
+    protected $fillable=['user_id', 'question_id','answer','result','time_spent'];
+    
+    public function question()
+    {
+        return $this->belongsTo(Question::class, 'question_id');
+    }
 }

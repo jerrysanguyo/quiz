@@ -9,18 +9,17 @@ use App\Models\User;
 
 class quizController extends Controller
 {
-    public function score() {
+    public function score() 
+    {
         $userId = auth()->id();
         if (!$userId) {
             return redirect()->route('quiz')->with('error', 'Unable to fetch user ID.');
         }
     
-        $userAnswers = DB::table('user_answer')
-            ->join('question', 'user_answer.question_id', '=', 'question.id')
-            ->select('question.qDescription as question', 'user_answer.result as result', 'user_answer.answer as answer', 'user_answer.time_spent as timespent', DB::raw('(user_answer.answer = question.qAnswer) as is_correct'))
-            ->where('user_id', $userId)
-            ->whereIn('user_answer.result', [0, 1])
-            ->get();
+        $userAnswers = Quiz::with('question') 
+                           ->where('user_id', $userId)
+                           ->whereIn('result', [0, 1])
+                           ->get();
     
         $correctAnswersCount = $userAnswers->where('is_correct', true)->count();
         $incorrectAnswersCount = $userAnswers->where('is_correct', false)->count();
@@ -32,7 +31,8 @@ class quizController extends Controller
         ]);
     }
     
-    public function quiz() {
+    public function quiz() 
+    {
         $userId = auth()->id();
     
         $answeredQuestionIds = DB::table('user_answer')
@@ -52,8 +52,8 @@ class quizController extends Controller
         return view('quiz.quiz', ['listQuestion' => $listQuestion]);
     }
 
-    public function questionAnswer (Request $request) {
-        
+    public function questionAnswer (Request $request) 
+    {
         $request->validate([
             'question_id' => 'required',
             'answer' => 'required',
@@ -83,33 +83,26 @@ class quizController extends Controller
         return redirect(route('quiz'));
     }
 
-    public function userHome() {
+    public function userHome() 
+    {
         $userId = auth()->id();
         if (!$userId) {
             return redirect()->route('quiz')->with('error', 'Unable to fetch user ID.');
         }
     
-        $userAnswers = DB::table('user_answer')
-            ->join('question', 'user_answer.question_id', '=', 'question.id')
-            ->select('question.qDescription as question', 'user_answer.result as result', 'user_answer.answer as answer', 'user_answer.time_spent as timespent', DB::raw('(user_answer.answer = question.qAnswer) as is_correct'))
-            ->where('user_id', $userId)
-            ->whereIn('user_answer.result', [0, 1])
-            ->get();
+        $user = User::with(['answers.question'])->findOrFail($userId);
     
-        $totalQuestionsCount = $userAnswers->count();
-        $correctAnswersCount = $userAnswers->where('is_correct', true)->count();
-        $incorrectAnswersCount = $userAnswers->where('is_correct', false)->count();
+        $correctAnswersCount = $user->answers->reduce(function ($carry, $item) {
+            return $carry + (($item->answer === $item->question->qAnswer) ? 1 : 0);
+        }, 0);
     
-        if ($totalQuestionsCount == 0) {
-            return view('userHome', [
-                'showQuizButton' => true
-            ]);
-        }
+        $totalQuestionsCount = $user->answers->count();
+        $incorrectAnswersCount = $totalQuestionsCount - $correctAnswersCount;
     
-        $totalScore = ($correctAnswersCount / $totalQuestionsCount) * 100;
+        $totalScore = $totalQuestionsCount ? round(($correctAnswersCount / $totalQuestionsCount) * 100, 2) : null;
     
-        return view('userHome', [
-            'totalScore' => $totalScore
-        ]);
+        $showQuizButton = $totalQuestionsCount === 0;
+    
+        return view('userHome', compact('totalScore', 'showQuizButton'));
     }
 }

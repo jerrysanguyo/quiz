@@ -11,10 +11,5 @@ class score extends Model
 
     protected $table = 'score';
 
-    protected $fillable=[
-        'user_scoreId',
-        'examType',
-        'score',
-        'added_by'
-    ];
+    protected $fillable=['user_scoreId', 'examType', 'score', 'added_by'];
 }

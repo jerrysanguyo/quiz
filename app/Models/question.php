@@ -11,13 +11,5 @@ class question extends Model
 
     protected $table='question';
 
-    protected $fillable = [
-        'qNumber',
-        'qDescription',
-        'qAnswer',
-        'qChoicesB',
-        'qChoicesC',
-        'qChoicesD',
-        'added_by'
-    ];
+    protected $fillable = ['qNumber','qDescription',   'qAnswer', 'qChoicesB', 'qChoicesC','qChoicesD',   'added_by'];
 }
