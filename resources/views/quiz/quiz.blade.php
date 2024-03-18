@@ -13,17 +13,16 @@
         var timerBar = document.getElementById('timer-bar');
         var radioButtons = document.querySelectorAll('input[type="radio"]');
         var remainingTimeInput = document.getElementById('remaining-time');
-        var timeLeft = 30;
+        var timeLeft = @if(Auth::user()->disability->disability_name == 'Visual') 360 @else 300 @endif;
         var timerInterval = setInterval(updateTimer, 1000);
 
         function updateTimer() {
             timeLeft--;
             timer.textContent = timeLeft + ' seconds left';
-            var percentageLeft = (timeLeft / 30) * 100;
+            var percentageLeft = (timeLeft / @if(Auth::user()->disability->disability_name == 'Visual') 360 @else 300 @endif) * 100;
             timerBar.style.width = percentageLeft + '%';
             
-            remainingTimeInput.value = 30 - timeLeft;
-
+            remainingTimeInput.value = @if(Auth::user()->disability->disability_name == 'Visual') 360 @else 300 @endif - timeLeft;
             if (timeLeft <= 0) {
                 clearInterval(timerInterval);
                 timer.textContent = 'Time\'s up! 0';
@@ -62,7 +61,7 @@
                                     aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" id="timer-bar"></div>
                             </div>
                             <div class="text-center mt-3">
-                                <h2><span id="timer">30</span></h2>
+                                <h2><span id="timer">@if(Auth::user()->disability->disability_name == 'Visual') 6mins @else 5mins @endif</span></h2>
                             </div>
                         </div>
                         @foreach ($listQuestion as $questions)
@@ -104,12 +103,7 @@
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col-md-6" id="passBtn" style="display=inline-block">
-                                <div class="d-grid gap-2">
-                                    <button class="btn btn-success" id="btnPass">Pass</button>
-                                </div>
-                            </div>
-                            <div class="col-md-6" id="subBtn">
+                            <div class="col-md-12" id="subBtn">
                                 <div class="d-grid gap-2">
                                     <input class="btn btn-primary" type="submit" value="Submit" />
                                 </div>

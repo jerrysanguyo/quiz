@@ -47,6 +47,7 @@ Route::middleware(['auth', CheckUserRole::class])->group(function () {
     Route::get('/score/{score}',[adminQuizController::class, 'scoreIndex'])->name('score-index');
     Route::post('/score/second',[adminQuizController::class, 'secondScoreAdd'])->name('second-score-add');
     Route::post('/score/third',[adminQuizController::class, 'thirdScoreAdd'])->name('third-score-add');
+    Route::post('/score/third/exempt',[adminQuizController::class, 'exempt'])->name('third-exempt');
 });
 
 Route::middleware (['auth', judgeRole::class])->group(function (){

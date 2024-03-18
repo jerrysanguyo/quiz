@@ -84,6 +84,7 @@
                         @if(isset($thirdExamScore))
                             <h1>{{ $thirdExamScore ?? 'N/A' }}</h1>
                         @else
+                            @if($user->exempted === 'No')
                             <form action="{{ route('third-score-add') }}" method="post">
                                 @csrf
                                 @method('POST')
@@ -102,6 +103,19 @@
                                     </div>
                                 </div>
                             </form>
+                            <div class="pt-3">
+                                <form action="{{ route('third-exempt') }}" method="POST">
+                                    @csrf
+                                    @method('POST')
+                                    <div class="d-grid gap-2">
+                                        <input type="text" name="user_scoreId" id="" class="form-control" value="{{ $user->id }}" hidden>
+                                        <button class="btn btn-success">Exempt</button>
+                                    </div>
+                                </form>
+                            </div>
+                            @else
+                            <h1>Exempted</h1>
+                            @endif
                         @endif
                     </div>
                 </div>

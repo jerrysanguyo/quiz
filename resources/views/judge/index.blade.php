@@ -12,7 +12,10 @@
                             <tr>
                                 <th>Full name</th>
                                 <th>Disability</th>
-                                <th>Score</th>
+                                <th>First Assessment</th>
+                                <th>Second Assessment</th>
+                                <th>Third Assessment</th>
+                                <th>Overall</th>
                                 <th>Date taken</th>
                                 <th>Action</th>
                             </tr>
@@ -22,6 +25,15 @@
                                 <tr>
                                     <td>{{ $taker->name }}</td>
                                     <td>{{ $taker->disability->disability_name ?? 'N/A' }}</td>
+                                    <td>{{ $taker->firstAssessmentScore }}</td>
+                                    <td>{{ $taker->secondAssessmentScore }}</td>
+                                    <td>
+                                        @if($taker->exempted === 'Yes')
+                                            Exempted
+                                        @else
+                                            {{ $taker->thirdAssessmentScore ?? 'N/A' }}
+                                        @endif
+                                    </td>
                                     <td>{{ $taker->overall_score }}</td>
                                     <td>{{ $taker->answers->max('created_at') ? $taker->answers->max('created_at')->format('Y-m-d') : 'N/A' }}</td>
                                     <td>

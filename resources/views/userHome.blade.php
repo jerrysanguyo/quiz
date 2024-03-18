@@ -31,7 +31,15 @@
                     <hr>
                     <div class="row text-center">
                         <div class="col-md-12">
+                            @if(isset($secondExamScore))
                             <h1>{{ $secondExamScore ?? 'N/A' }}</h1>
+                            @else
+                            <a href="{{ asset('exams/Excel.xlsx') }}">
+                                <button class="btn btn-primary">
+                                    Download Excel Exam
+                                </button>
+                            </a>
+                            @endIf
                         </div>
                     </div>
                 </div>
@@ -44,7 +52,15 @@
                     <hr>
                     <div class="row text-center">
                         <div class="col-md-12">
+                            @If(isset($thirdExamScore))
                             <h1>{{ $thirdExamScore ?? 'N/A' }}</h1>
+                            @else
+                            <a href="{{ asset('exams/ppt.pptx') }}">
+                                <button class="btn btn-primary">
+                                    Download PPT Exam
+                                </button>
+                            </a>
+                            @endIf
                         </div>
                     </div>
                 </div>

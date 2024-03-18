@@ -19,15 +19,33 @@ class adminQuizController extends Controller
                         ->whereNotIn('type', ['admin', 'judge', 'superadmin'])
                         ->get()
                         ->map(function ($user) {
-                            $firstAssessmentScore = $this->calculateFirstAssessmentScoreForUser($user);
-                            $totalScores = $user->scores->sum('score');
-                            $overallScore = ($firstAssessmentScore + $totalScores) / 3; 
-                            $user->overall_score = round($overallScore, 2);
+                            $user->firstAssessmentScore = $this->calculateFirstAssessmentScoreForUser($user);
+                            $user->secondAssessmentScore = $this->calculateSecondAssessmentScoreForUser($user); 
+                            $user->thirdAssessmentScore = $this->calculateThirdAssessmentScoreForUser($user); 
+
+                            $scores = array_filter([$user->firstAssessmentScore, $user->secondAssessmentScore, $user->thirdAssessmentScore]);
+                            $user->overall_score = !empty($scores) ? round(array_sum($scores) / count($scores), 2) : null;
+
                             return $user;
                         });
 
         $view = auth()->user()->type === 'admin' ? 'home' : 'judge.index';
+
         return view($view, compact('takers'));
+    }
+    
+    protected function calculateSecondAssessmentScoreForUser($user)
+    {
+        $secondAssessmentScore = $user->scores->where('examType', 'second')->first();
+    
+        return $secondAssessmentScore ? $secondAssessmentScore->score : null;
+    }
+    
+    protected function calculateThirdAssessmentScoreForUser($user)
+    {
+        $thirdAssessmentScore = $user->scores->where('examType', 'third')->first();
+    
+        return $thirdAssessmentScore ? $thirdAssessmentScore->score : null;
     }
 
     protected function calculateFirstAssessmentScoreForUser($user)
@@ -124,6 +142,7 @@ class adminQuizController extends Controller
             'user_scoreId' => $request->user_scoreId,
             'score' => $request->score,
             'examType' => 'second',
+            'exempted' => 'No',
             'added_by' => auth()->user()->id,
         ]);
         return redirect()->route('takers')->with('success', 'Second exam score added successfully!');
@@ -135,8 +154,20 @@ class adminQuizController extends Controller
             'user_scoreId' => $request->user_scoreId,
             'score' => $request->score,
             'examType' => 'third',
+            'exempted' => 'No',
             'added_by' => auth()->user()->id,
         ]);
         return redirect()->route('takers')->with('success', 'Third exam score added successfully!');
+    }
+
+    public function exempt(Request $request) {
+        Score::create([
+            'user_scoreId' => $request->user_scoreId,
+            'examType' => 'third',
+            'exempted' => 'Yes',
+            'added_by' => auth()->user()->id,
+        ]);
+
+        return redirect()->route('takers')->with('success', 'This user has been exempted for third assessment successfully!');
     }
 }
