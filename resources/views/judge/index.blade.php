@@ -25,8 +25,8 @@
                                 <tr>
                                     <td>{{ $taker->name }}</td>
                                     <td>{{ $taker->disability->disability_name ?? 'N/A' }}</td>
-                                    <td>{{ $taker->firstAssessmentScore }}</td>
-                                    <td>{{ $taker->secondAssessmentScore }}</td>
+                                    <td>{{ $taker->firstAssessmentScore ?? 'N/A'  }}</td>
+                                    <td>{{ $taker->secondAssessmentScore ?? 'N/A' }}</td>
                                     <td>
                                         @if($taker->exempted === 'Yes')
                                             Exempted
@@ -34,7 +34,7 @@
                                             {{ $taker->thirdAssessmentScore ?? 'N/A' }}
                                         @endif
                                     </td>
-                                    <td>{{ $taker->overall_score }}</td>
+                                    <td>{{ $taker->overall_score ?? 'N/A' }}</td>
                                     <td>{{ $taker->answers->max('created_at') ? $taker->answers->max('created_at')->format('Y-m-d') : 'N/A' }}</td>
                                     <td>
                                         <a href="{{ route('judgeQuizDetails', ['detail'=> $taker->id]) }}">
