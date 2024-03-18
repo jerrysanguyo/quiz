@@ -22,15 +22,23 @@ class adminQuizController extends Controller
                             $user->firstAssessmentScore = $this->calculateFirstAssessmentScoreForUser($user);
                             $user->secondAssessmentScore = $this->calculateSecondAssessmentScoreForUser($user); 
                             $user->thirdAssessmentScore = $this->calculateThirdAssessmentScoreForUser($user); 
-
+    
                             $scores = array_filter([$user->firstAssessmentScore, $user->secondAssessmentScore, $user->thirdAssessmentScore]);
                             $user->overall_score = !empty($scores) ? round(array_sum($scores) / count($scores), 2) : null;
-
+    
+                            // Determine if the user is exempted from the third assessment
+                            $thirdExempted = $user->scores->filter(function ($score) {
+                                return $score->examType == 'third' && $score->exempted == 'Yes';
+                            })->isNotEmpty(); // Use isNotEmpty to get a boolean result
+    
+                            // Set the thirdExempted property on the user object
+                            $user->thirdExempted = $thirdExempted;
+    
                             return $user;
                         });
-
+    
         $view = auth()->user()->type === 'admin' ? 'home' : 'judge.index';
-
+    
         return view($view, compact('takers'));
     }
     
@@ -126,6 +134,13 @@ class adminQuizController extends Controller
     
         $secondExamScore = optional($user->scores->where('examType', 'second')->first())->score;
         $thirdExamScore = optional($user->scores->where('examType', 'third')->first())->score;
+        $thirdExempted = optional($user->scores->where('examType', 'third', 'exempted', 'Yes')->first())->score;
+
+        $thirdExempted = $user->scores->filter(function ($score) {
+            return $score->examType == 'third' && $score->exempted == 'Yes';
+        })->first();
+
+        $thirdExemptedScore = optional($thirdExempted)->score;
     
         $scores = array_filter([$totalScore, $secondExamScore, $thirdExamScore], function($value) {
             return !is_null($value);
@@ -133,7 +148,7 @@ class adminQuizController extends Controller
         
         $overAll = $scores ? round(array_sum($scores) / count($scores), 2) : null;
     
-        return view('examScore', compact('user', 'totalScore', 'secondExamScore', 'thirdExamScore', 'overAll'));
+        return view('examScore', compact('user', 'totalScore', 'secondExamScore', 'thirdExamScore', 'overAll', 'thirdExempted'));
     }
 
     public function secondScoreAdd(Request $request)

@@ -28,7 +28,7 @@
                                     <td>{{ $taker->firstAssessmentScore ?? 'N/A'  }}</td>
                                     <td>{{ $taker->secondAssessmentScore ?? 'N/A' }}</td>
                                     <td>
-                                        @if($taker->exempted === 'Yes')
+                                        @if($taker->thirdExempted)
                                             Exempted
                                         @else
                                             {{ $taker->thirdAssessmentScore ?? 'N/A' }}

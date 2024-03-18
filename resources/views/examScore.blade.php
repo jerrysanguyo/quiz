@@ -50,7 +50,7 @@
                     <hr>
                     <div class="row text-center">
                         @if(isset($secondExamScore))
-                            <h1>{{ $secondExamScore ?? 'N/A' }}</h1>
+                            <h1>{{ $secondExamScore }}</h1>
                         @else
                             <form action="{{ route('second-score-add') }}" method="post">
                                 @csrf
@@ -82,9 +82,10 @@
                     <hr>
                     <div class="row text-center">
                         @if(isset($thirdExamScore))
-                            <h1>{{ $thirdExamScore ?? 'N/A' }}</h1>
+                            <h1>{{ $thirdExamScore }}</h1>
+                        @elseif(isset($thirdExempted) && $thirdExempted)
+                            <h1>Exempted</h1>
                         @else
-                            @if($user->exempted === 'No')
                             <form action="{{ route('third-score-add') }}" method="post">
                                 @csrf
                                 @method('POST')
@@ -113,9 +114,6 @@
                                     </div>
                                 </form>
                             </div>
-                            @else
-                            <h1>Exempted</h1>
-                            @endif
                         @endif
                     </div>
                 </div>
