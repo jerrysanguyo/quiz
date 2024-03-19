@@ -34,7 +34,7 @@
                             @if(isset($secondExamScore))
                             <h1>{{ $secondExamScore ?? 'N/A' }}</h1>
                             @else
-                            <a href="{{ asset('exams/Excel.xlsx') }}">
+                            <a href="{{ asset('exams/Excel.xlsx') }}" download="EXCEL_Exam.pptx">
                                 <button class="btn btn-primary">
                                     Download Excel Exam
                                 </button>
@@ -55,7 +55,7 @@
                             @If(isset($thirdExamScore))
                             <h1>{{ $thirdExamScore ?? 'N/A' }}</h1>
                             @else
-                            <a href="{{ asset('exams/ppt.pptx') }}">
+                            <a href="{{ asset('exams/ppt.pptx') }}" download="PPT_Exam.pptx">
                                 <button class="btn btn-primary">
                                     Download PPT Exam
                                 </button>
